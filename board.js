@@ -449,6 +449,7 @@ function arrangeSteffen(passengers, aircraft) {
 }
 
 async function simulate(simStatus, tickLengthms, luggageDistribution) {
+    t0 = performance.now();
     if (tickLengthms === undefined) {
         
         tickLengthms = 500;
@@ -512,7 +513,8 @@ async function simulate(simStatus, tickLengthms, luggageDistribution) {
         aircraft.render(ctx);
         
         if (activePax.filter(p => p.state !== State.Seated).length === 0) {
-            setStatus(`All ${paxCount} passengers seated after ${iterCount} iterations`);
+	    const t1 = performance.now();
+            setStatus(`All ${paxCount} passengers seated after ${(t1 - t0)/1000} seconds`);
             break;
         }
         for (const p of activePax) {
@@ -525,6 +527,7 @@ async function simulate(simStatus, tickLengthms, luggageDistribution) {
         await new Promise(resolve => setTimeout(resolve, deltaT));
     }
     if (!simStatus.run) {
+	console.timeEnd('timer');
         const msg = `Simulation aborted after ${iterCount} iterations`;
         console.log(msg);
         setStatus(msg);
